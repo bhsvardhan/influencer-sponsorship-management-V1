@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Campaign Details{% endblock %}
+{% block body %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h1 class="card-title text-center mb-4">{{ item[0] }}</h1>
+        <div class="card-body">
+            <p><strong>Description:</strong> {{ item[1] }}</p>
+            <p><strong>Start Date:</strong> {{ item[2] }}</p>
+            <p><strong>End Date:</strong> {{ item[3] }}</p>
+            <p><strong>Budget:</strong> ${{ item[4] }}</p>
+            <p><strong>Visibility:</strong> {{ item[5] }}</p>
+            <p><strong>Goals:</strong> {{ item[6] }}</p>
+        </div>
+        <div class="text-center mt-4">
+            <a href="/influencer_dashboard1" class="btn btn-info">Back to Campaigns</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

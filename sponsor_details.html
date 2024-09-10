@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Sponsor Details{% endblock %}
+{% block body %}
+<h1>{{ item[2] }}</h1>
+<p>Username: {{ item[0] }}</p>
+<p>Industry: {{ item[3] }}</p>
+<p>Budget: {{ item[4] }}</p>
+<a href="/admin_dashboard" class="btn btn-info">Back to Users and Campaigns</a>
+{% endblock %}

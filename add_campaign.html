@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Add Campaign{% endblock %}
+{% block cssfile %}
+<link rel="stylesheet" href="../static/signUp.css"> {% endblock %}
+{% block body %}
+<h2>Add Campaign</h2>
+<form id="campaignForm" method="POST" action="/add_campaign" onsubmit="return validateForm()">
+    <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="start_date" class="form-label">Start Date</label>
+        <input type="date" class="form-control" id="start_date" name="start_date" required>
+    </div>
+    <div class="mb-3">
+        <label for="end_date" class="form-label">End Date</label>
+        <input type="date" class="form-control" id="end_date" name="end_date" required>
+    </div>
+    <div class="mb-3">
+        <label for="budget" class="form-label">Budget</label>
+        <input type="number" class="form-control" id="budget" name="budget" required>
+    </div>
+    <div class="mb-3">
+        <label for="visibility" class="form-label">Visibility</label>
+        <select class="form-select" id="visibility" name="visibility" required>
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="goals" class="form-label">Goals</label>
+        <textarea class="form-control" id="goals" name="goals" rows="3" required></textarea>
+    </div>
+    <button type="submit" id="submitButton" class="btn btn-primary" disabled>Add Campaign</button>
+</form>
+
+<script>
+    function validateForm() {
+        let name = document.getElementById("name").value;
+        let budget = document.getElementById("budget").value;
+
+        if (name.length < 3) {
+            alert("Campaign name must be at least 3 characters long.");
+            return false;
+        }
+
+        if (budget <= 0) {
+            alert("Budget must be a positive number.");
+            return false;
+        }
+
+        return true;
+    }
+
+    function toggleSubmitButton() {
+        let name = document.getElementById("name").value;
+        let budget = document.getElementById("budget").value;
+        let submitButton = document.getElementById("submitButton");
+
+        submitButton.disabled = !(name.length >= 3 && budget > 0);
+    }
+
+    document.getElementById("name").addEventListener("input", toggleSubmitButton);
+    document.getElementById("budget").addEventListener("input", toggleSubmitButton);
+</script>
+
+{% endblock %}

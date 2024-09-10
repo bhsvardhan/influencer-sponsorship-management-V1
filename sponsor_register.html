@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %} Register as Sponsor {% endblock %}
+{% block cssfile %}
+<link rel="stylesheet" href="../static/login.css">
+{% endblock %}
+{% block body %}
+<div class="container mt-5" style="max-height: 80vh; overflow-y: auto;">
+    <h2>Register as Sponsor</h2>
+    <form action="/sponsor_register" method="POST">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <div id="passwordHelpBlock" class="form-text">
+            Your password must be min 8 characters long, contain letters and numbers, and must not contain spaces or
+            special characters.
+        </div>
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="niche" class="form-label">Industry</label>
+            <input type="text" class="form-control" id="industry" name="industry" required>
+        </div>
+        <div class="mb-3">
+            <label for="category" class="form-label">Budget</label>
+            <input type="text" class="form-control" id="budget" name="budget">
+        </div>
+        <button type="submit" class="btn btn-primary" id="subButton" >Register</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let pass = document.getElementById("password");
+
+        function validatePass() {
+            return /^[a-zA-Z0-9]{8,}/.test(pass.value);
+        }
+
+        function toggleSubmit() {
+            let subButton = document.getElementById("subButton");
+            subButton.disabled = !validatePass();
+        }
+
+        pass.addEventListener("input", toggleSubmit);
+        toggleSubmit();  // Initial check in case the input is already filled
+    });
+</script>
+{% endblock %}

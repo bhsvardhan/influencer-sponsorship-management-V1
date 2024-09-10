@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %} Sign Up {% endblock %}
+{% block cssfile %}
+<link rel="stylesheet" href="../static/signUp.css"> {% endblock %}
+{% block body %}
+<div class="signUp-form mx-auto">
+    <h2>Sign Up Form</h2>
+    <form id="userForm">
+        <div class="mb-3">
+            <button type="button" id="influencerRegister" class="btn btn-primary">Influencer Register</button>
+        </div>
+        <br>
+        <div class="mb-3">
+            <button type="button" id="sponsorRegister" class="btn btn-primary">Sponsor Register</button>
+        </div>
+        <p><a href="/login" class="link-primary fs-8 fw-normal">Already have an account?</a></p>
+    </form>
+</div>
+
+<script>
+    document.getElementById('influencerRegister').addEventListener('click', function () {
+        window.location.href = '/influencer_register';
+    });
+
+    document.getElementById('sponsorRegister').addEventListener('click', function () {
+        window.location.href = '/sponsor_register';
+    });
+</script>
+{% endblock %}

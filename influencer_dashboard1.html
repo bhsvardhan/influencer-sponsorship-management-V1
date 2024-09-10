@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Influencer Dashboard - Find{% endblock %}
+{% block cssfile %}
+<link rel="stylesheet" href="../static/signUp.css"> {% endblock %}
+{% block body %}
+<div class="container mt-5" style="max-height: 80vh; overflow-y: auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Influencer Dashboard</h1>
+        <div class="btn-group">
+            <a href="/influencer_dashboard" class="btn btn-hover">Profile</a>
+            <a href="/influencer_dashboard1" class="btn btn-info">Find</a>
+            <a href="/logOut" class="btn btn-hover">Logout</a>
+        </div>
+    </div>
+    <div class="mx-auto">
+        <span class="display-2">Welcome {{ name }}</span>
+    </div>
+    <div class="mb-4">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search campaigns by name"
+            onkeyup="searchCampaigns()">
+    </div>
+    <div class="row" id="campaignsContainer">
+        {% for campaign in campaigns %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ campaign[0] }}</h5>
+                    <p class="card-text">{{ campaign[1][:100] }}...</p>
+                    <div class="d-flex justify-content-between">
+                        <a href="/view/{{ campaign[0] }}" class="btn btn-primary">View Details</a>
+                        <button onclick="sendRequest('{{ campaign[0] }}')" class="btn btn-success">Request</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function searchCampaigns() {
+        const searchValue = document.getElementById('searchInput').value;
+        fetch('/search_campaigns?search=' + encodeURIComponent(searchValue))
+            .then(response => response.json())
+            .then(data => {
+                const campaignsContainer = document.getElementById('campaignsContainer');
+                campaignsContainer.innerHTML = '';
+                data.forEach(campaign => {
+                    const campaignCard = `
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">${campaign[0]}</h5>
+                                    <p class="card-text">${campaign[1].substring(0, 100)}...</p>
+                                    <div class="d-flex justify-content-between">
+                                        <a href="/view/${campaign[0]}" class="btn btn-primary">View Details</a>
+                                        <button onclick="sendRequest('${campaign[0]}')" class="btn btn-success">Request</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    campaignsContainer.innerHTML += campaignCard;
+                });
+            });
+    }
+
+    function sendRequest(campaignName) {
+        const influencerUsername = "{{ name }}";  // The logged-in influencer's username from the session
+
+        fetch('/send_request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ campaign_name: campaignName, influencer_username: influencerUsername }),
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Request sent successfully!');
+                } else {
+                    alert('Failed to send request.');
+                }
+            });
+    }
+
+</script>
+
+{% endblock %}
