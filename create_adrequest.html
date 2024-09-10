@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Sponsor Dashboard - Campaigns{% endblock %}
+{% block cssfile %}
+<link rel="stylesheet" href="../static/signUp.css">
+{% endblock %}
+{% block body %}
+<div class="container mt-5">
+    <h1>Create Ad Request</h1>
+    <form id="request-form" method="post">
+        <div class="form-group">
+            <label for="campaign_name">Campaign Name:</label>
+            <input type="text" id="campaign_name" name="campaign_name" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="influencer_username">Influencer Username:</label>
+            <input type="text" id="influencer_username" name="influencer_username" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" class="form-control" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="requirements">Requirements:</label>
+            <textarea id="requirements" name="requirements" class="form-control" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="payment_amount">Payment Amount:</label>
+            <input type="number" id="payment_amount" name="payment_amount" class="form-control" required>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="submitRequest()">Submit</button>
+    </form>
+
+    <!-- Details Modal -->
+    <div id="details-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="details-title"></h2>
+            <div id="details-body"></div>
+        </div>
+    </div>
+
+    <!-- Request Modal -->
+    <div id="request-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Send Request</h2>
+            <form id="request-form">
+                <div class="form-group">
+                    <label for="campaign_name">Campaign Name:</label>
+                    <input type="text" id="campaign_name" name="campaign_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="influencer_username">Influencer Username:</label>
+                    <input type="text" id="influencer_username" name="influencer_username" class="form-control"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="requirements">Requirements:</label>
+                    <textarea id="requirements" name="requirements" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="payment_amount">Payment Amount:</label>
+                    <input type="number" id="payment_amount" name="payment_amount" class="form-control" required>
+                </div>
+                <button type="button" onclick="submitRequest()">Submit</button>
+                <button type="button" onclick="closeModal()">Close</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function viewInfluencer(influencerId) {
+        try {
+            const response = await fetch(`/view_influencer1/${influencerId}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            document.getElementById('details-title').innerText = 'Influencer Details';
+            document.getElementById('details-body').innerHTML = `
+                <p><strong>Username:</strong> ${data.username}</p>
+                <p><strong>Name:</strong> ${data.name}</p>
+                <p><strong>Niche:</strong> ${data.niche}</p>
+                <p><strong>Category:</strong> ${data.category}</p>
+                <p><strong>Reach:</strong> ${data.reach}</p>
+                <p><strong>Platform Presence:</strong> ${data.platform_presence}</p>
+            `;
+            document.getElementById('influencer_username').value = data.username; // set the influencer username in the hidden input
+            openModal('details-modal');
+        } catch (error) {
+            console.error('Error fetching influencer details:', error);
+        }
+    }
+
+    function sendRequestForm(influencerId) {
+        document.getElementById('request-form').dataset.influencerId = influencerId;
+        openModal('request-modal');
+    }
+
+    async function submitRequest() {
+        const influencerId = document.getElementById('request-form').dataset.influencerId;
+        const campaignName = document.getElementById('campaign_name').value;
+        const influencerUsername = document.getElementById('influencer_username').value;
+        const message = document.getElementById('message').value;
+        const requirements = document.getElementById('requirements').value;
+        const paymentAmount = document.getElementById('payment_amount').value;
+
+        try {
+            const response = await fetch(`/send_request1/${influencerId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    campaign_name: campaignName,
+                    influencer_username: influencerUsername,
+                    message: message,
+                    requirements: requirements,
+                    payment_amount: paymentAmount
+                })
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert('Request sent successfully');
+                closeModal();
+            } else {
+                alert('Error sending request');
+            }
+        } catch (error) {
+            console.error('Error sending request:', error);
+        }
+    }
+
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'block';
+    }
+
+    function closeModal() {
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.style.display = 'none';
+        });
+    }
+
+    window.onload = loadAllData;
+</script>
+{% endblock %}

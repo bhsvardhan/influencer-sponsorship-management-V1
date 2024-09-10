@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %} {{ campaign[1] }} {% endblock %}
+{% block cssfile %}
+<link rel="stylesheet" href="../static/login.css"> {% endblock %}
+{% block body %}
+<div class="container mt-5" style="max-height: 80vh; overflow-y: auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Sponsor Dashboard</h1>
+        <div class="btn-group">
+            <a href="/sponsor_dashboard" class="btn btn-hover">Profile</a>
+            <a href="/sponsor_dashboard1" class="btn btn-info">Campaigns</a>
+            <a href="/view_requests" class="btn btn-hover">View Requests</a>
+            <a href="/sponsor_dashboard2" class="btn btn-hover">Find</a>
+            <a href="/stats" class="btn btn-hover">Stats</a>
+            <a href="/logOut" class="btn btn-hover">Logout</a>
+        </div>
+    </div>
+    <h1>{{ campaign[0] }}</h1>
+    <p><strong>Description:</strong> {{ campaign[1] }}</p>
+    <p><strong>Start Date:</strong> {{ campaign[2] }}</p>
+    <p><strong>End Date:</strong> {{ campaign[3] }}</p>
+    <p><strong>Budget:</strong> {{ campaign[4] }}</p>
+    <p><strong>Visibility:</strong> {{ campaign[5] }}</p>
+    <p><strong>Goals:</strong> {{ campaign[6] }}</p>
+    <div class="text-center mb-4">
+        <a href="/create_adrequest" class="text-decoration-none">
+            <h3>create new ad request</h3>
+        </a>
+    </div>
+</div>
+{% endblock %}

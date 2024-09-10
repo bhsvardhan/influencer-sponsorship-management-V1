@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Influencer Details{% endblock %}
+{% block body %}
+<h1>{{ item[2] }}</h1>
+<p>Username: {{ item[0] }}</p>
+<p>Niche: {{ item[3] }}</p>
+<p>Category: {{ item[4] }}</p>
+<p>Reach: {{ item[5] }}</p>
+<p>Platform Presence: {{ item[6] }}</p>
+<a href="/admin_dashboard" class="btn btn-info">Back to Users and Campaigns</a>
+{% endblock %}

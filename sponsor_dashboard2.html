@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block title %}Sponsor Dashboard - Find{% endblock %}
+{% block cssfile %}
+<link rel="stylesheet" href="../static/dashboard.css">
+{% endblock %}
+{% block body %}
+<script>
+    async function loadAllData() {
+        try {
+            const response = await fetch('/all_data1');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            displayResults(data);
+        } catch (error) {
+            console.error('Error fetching all data:', error);
+        }
+    }
+
+    async function search() {
+        const query = document.getElementById('searchInput').value;
+
+        if (query.length < 1) {
+            loadAllData();
+            return;
+        }
+
+        try {
+            const response = await fetch(`/search1?query=${encodeURIComponent(query)}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            displayResults(data);
+        } catch (error) {
+            console.error('Error fetching search results:', error);
+        }
+    }
+
+    function displayResults(results) {
+        const resultsContainer = document.getElementById('results');
+        resultsContainer.innerHTML = '';
+
+        if (results.length === 0) {
+            resultsContainer.innerHTML = '<tr><td colspan="3">No results found.</td></tr>';
+            return;
+        }
+
+        results.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.type}</td>
+                <td>
+                    ${item.type === 'campaign' ? `<button onclick="viewCampaign('${item.id}')" class="btn btn-info btn-sm">View</button>` : ''}
+                    ${item.type === 'influencer' ? `<button onclick="viewInfluencer('${item.id}')" class="btn btn-info btn-sm">View</button>
+                    <button onclick="sendRequestForm('${item.id}')" class="btn btn-primary btn-sm">Request</button>` : ''}
+                </td>
+            `;
+            resultsContainer.appendChild(row);
+        });
+    }
+
+    function closeModal() {
+        document.getElementById('details-modal').style.display = 'none';
+        document.getElementById('request-modal').style.display = 'none';
+    }
+
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'block';
+    }
+
+    async function viewCampaign(campaignId) {
+        try {
+            const response = await fetch(`/view_campaign1/${campaignId}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            document.getElementById('details-title').innerText = 'Campaign Details';
+            document.getElementById('details-body').innerHTML = `
+                <p><strong>Name:</strong> ${data.name}</p>
+                <p><strong>Description:</strong> ${data.description}</p>
+                <p><strong>Start Date:</strong> ${data.start_date}</p>
+                <p><strong>End Date:</strong> ${data.end_date}</p>
+                <p><strong>Budget:</strong> ${data.budget}</p>
+                <p><strong>Visibility:</strong> ${data.visibility}</p>
+                <p><strong>Goals:</strong> ${data.goals}</p>
+            `;
+            openModal('details-modal');
+        } catch (error) {
+            console.error('Error fetching campaign details:', error);
+        }
+    }
+
+    async function viewInfluencer(influencerId) {
+        try {
+            const response = await fetch(`/view_influencer1/${influencerId}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            document.getElementById('details-title').innerText = 'Influencer Details';
+            document.getElementById('details-body').innerHTML = `
+                <p><strong>Username:</strong> ${data.username}</p>
+                <p><strong>Name:</strong> ${data.name}</p>
+                <p><strong>Niche:</strong> ${data.niche}</p>
+                <p><strong>Category:</strong> ${data.category}</p>
+                <p><strong>Reach:</strong> ${data.reach}</p>
+                <p><strong>Platform Presence:</strong> ${data.platform_presence}</p>
+            `;
+            openModal('details-modal');
+        } catch (error) {
+            console.error('Error fetching influencer details:', error);
+        }
+    }
+
+    function sendRequestForm(influencerId) {
+        document.getElementById('request-form').dataset.influencerId = influencerId;
+        openModal('request-modal');
+    }
+
+    async function submitRequest() {
+        const influencerId = document.getElementById('request-form').dataset.influencerId;
+        const campaignName = document.getElementById('campaign_name').value;
+        const message = document.getElementById('message').value;
+        const requirements = document.getElementById('requirements').value;
+        const paymentAmount = document.getElementById('payment_amount').value;
+
+        try {
+            const response = await fetch(`/send_request1/${influencerId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    campaign_name: campaignName,
+                    message: message,
+                    requirements: requirements,
+                    payment_amount: paymentAmount
+                })
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert('Request sent successfully');
+                closeModal();
+            } else {
+                alert('Error sending request');
+            }
+        } catch (error) {
+            console.error('Error sending request:', error);
+        }
+    }
+
+    window.onload = loadAllData;
+</script>
+
+<div class="container mt-5" style="max-height: 80vh; overflow-y: auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Sponsor Dashboard</h1>
+        <div class="btn-group">
+            <a href="/sponsor_dashboard" class="btn btn-hover">Profile</a>
+            <a href="/sponsor_dashboard1" class="btn btn-hover">Campaigns</a>
+            <a href="/view_requests" class="btn btn-hover">View Requests</a>
+            <a href="/sponsor_dashboard2" class="btn btn-info">Find</a>
+            <a href="/logOut" class="btn btn-hover">Logout</a>
+        </div>
+    </div>
+    <div class="mx-auto">
+        <span class="display-2">Welcome {{ name }}</span>
+    </div>
+
+    <div class="form-group">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search campaigns or influencers"
+            oninput="search()">
+    </div>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="results">
+            <!-- Data will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+
+    <!-- Modal for viewing details -->
+    <div id="details-modal" style="display: none;">
+        <div>
+            <h2 id="details-title"></h2>
+            <div id="details-body"></div>
+            <button onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Modal for sending requests -->
+    <div id="request-modal" style="display: none;">
+        <div>
+            <h2>Send Request</h2>
+            <form id="request-form">
+                <div class="form-group">
+                    <label for="campaign_name">Campaign Name:</label>
+                    <input type="text" id="campaign_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message:</label>
+                    <textarea id="message" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="requirements">Requirements:</label>
+                    <textarea id="requirements" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="payment_amount">Payment Amount:</label>
+                    <input type="number" id="payment_amount" class="form-control" required>
+                </div>
+                <button type="button" onclick="submitRequest()">Submit</button>
+                <button type="button" onclick="closeModal()">Close</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

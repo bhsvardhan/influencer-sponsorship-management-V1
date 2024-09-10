@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        async function fetchStats() {
+            const response = await fetch('/api/stats');
+            const data = await response.json();
+
+            document.getElementById('totalCampaigns').innerText = data.total_campaigns;
+            document.getElementById('totalInfluencers').innerText = data.total_influencers;
+            document.getElementById('totalSponsors').innerText = data.total_sponsors;
+            document.getElementById('totalBudget').innerText = data.total_budget;
+            document.getElementById('totalRequests').innerText = data.total_requests;
+            document.getElementById('totalAcceptedRequests').innerText = data.total_accepted_requests;
+
+            // Chart for total campaigns, influencers, and sponsors
+            new Chart(document.getElementById('userStatsChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Campaigns', 'Influencers', 'Sponsors'],
+                    datasets: [{
+                        data: [data.total_campaigns, data.total_influencers, data.total_sponsors],
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                    }]
+                }
+            });
+
+            // Chart for total requests and accepted requests
+            new Chart(document.getElementById('requestsStatsChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Total Requests', 'Accepted Requests'],
+                    datasets: [{
+                        data: [data.total_requests, data.total_accepted_requests],
+                        backgroundColor: ['#4BC0C0', '#FF9F40'],
+                    }]
+                }
+            });
+
+            // Chart for total budget
+            new Chart(document.getElementById('budgetChart'), {
+                type: 'pie',
+                data: {
+                    labels: ['Total Budget'],
+                    datasets: [{
+                        data: [data.total_budget],
+                        backgroundColor: ['#9966FF'],
+                    }]
+                }
+            });
+        }
+
+        window.onload = fetchStats;
+    </script>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Admin Dashboard</h1>
+            <div class="btn-group">
+                <a href="/admin_dashboard" class="btn btn-hover">Info</a>
+                <a href="/admin_dashboard1" class="btn btn-hover">Find</a>
+                <a href="/stats" class="btn btn-info">Stats</a>
+                <a href="/logOut" class="btn btn-hover">Logout</a>
+            </div>
+        </div>
+        <div class="mx-auto">
+            <span class="display-2">Welcome {{ name }}</span>
+        </div>
+        <h1 class="mb-4">Statistics</h1>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white mb-4">
+                    <div class="card-header">Total Campaigns</div>
+                    <div class="card-body">
+                        <h5 class="card-title" id="totalCampaigns"></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white mb-4">
+                    <div class="card-header">Total Influencers</div>
+                    <div class="card-body">
+                        <h5 class="card-title" id="totalInfluencers"></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-info text-white mb-4">
+                    <div class="card-header">Total Sponsors</div>
+                    <div class="card-body">
+                        <h5 class="card-title" id="totalSponsors"></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card bg-warning text-white mb-4">
+                    <div class="card-header">Total Budget</div>
+                    <div class="card-body">
+                        <h5 class="card-title" id="totalBudget"></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-danger text-white mb-4">
+                    <div class="card-header">Total Requests</div>
+                    <div class="card-body">
+                        <h5 class="card-title" id="totalRequests"></h5>
+                        <h5 class="card-title" id="totalAcceptedRequests"></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <canvas id="userStatsChart"></canvas>
+            </div>
+            <div class="col-md-6">
+                <canvas id="requestsStatsChart"></canvas>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <canvas id="budgetChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

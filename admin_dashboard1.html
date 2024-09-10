@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - Find{% endblock %}
+{% block cssfile %}
+<link rel="stylesheet" href="../static/signUp.css"> {% endblock %}
+{% block body %}
+<script>
+    async function loadAllData() {
+        try {
+            const response = await fetch('/all_data');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            displayResults(data);
+        } catch (error) {
+            console.error('Error fetching all data:', error);
+        }
+    }
+
+    // Function to fetch and display search results
+    async function search() {
+        const query = document.getElementById('searchInput').value;
+
+        if (query.length < 1) {
+            loadAllData();
+            return;
+        }
+
+        try {
+            const response = await fetch(`/search?query=${encodeURIComponent(query)}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            displayResults(data);
+        } catch (error) {
+            console.error('Error fetching search results:', error);
+        }
+    }
+
+    async function flagItem(itemId) {
+        const confirmed = confirm("Are you sure you want to flag this item?");
+        if (confirmed) {
+            try {
+                const response = await fetch(`/flag/${itemId}`);
+                if (response.ok) {
+                    alert('Item flagged successfully!');
+                    document.getElementById(`item-${itemId}`).remove();
+                } else {
+                    alert('Failed to flag the item.');
+                }
+            } catch (error) {
+                console.error('Error flagging item:', error);
+                alert('An error occurred while flagging the item.');
+            }
+        }
+    }
+
+    // Function to display results in the table
+    function displayResults(results) {
+        const resultsContainer = document.getElementById('results');
+        resultsContainer.innerHTML = '';
+
+        if (results.length === 0) {
+            resultsContainer.innerHTML = '<tr><td colspan="3">No results found.</td></tr>';
+            return;
+        }
+
+        results.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                    <td>${item[0]}</td>
+                    <td>${item[1]}</td>
+                    <td>
+                        <a href="/view/${item[2]}" class="btn btn-info btn-sm">View</a>
+                        <a href="/flag/${item[2]}" class="btn btn-danger btn-sm">Flag</a>
+                    </td>
+                `;
+            resultsContainer.appendChild(row);
+        });
+    }
+
+    // Load all data when the page loads
+    window.onload = loadAllData;
+</script>
+</head>
+
+<body>
+    <div class="container mt-5" style="max-height: 80vh; overflow-y: auto;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Admin Dashboard</h1>
+            <div class="btn-group">
+                <a href="/admin_dashboard" class="btn btn-hover">Info</a>
+                <a href="/admin_dashboard1" class="btn btn-info">Find</a>
+                <a href="/stats" class="btn btn-hover">Stats</a>
+                <a href="/logOut" class="btn btn-hover">Logout</a>
+            </div>
+        </div>
+        <div class="mx-auto">
+            <span class="display-2">Welcome {{ name }}</span>
+        </div>
+        <div class="form-group">
+            <input type="text" id="searchInput" class="form-control"
+                placeholder="Search campaigns, influencers, or sponsors" oninput="search()">
+        </div>
+
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="results">
+                <!-- Data will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+{% endblock %}

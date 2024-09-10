@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Influencer Details{% endblock %}
+{% block body %}
+<div class="container mt-5">
+    <h1>{{ influencer.name }}</h1>
+    <p><strong>Username:</strong> {{ influencer.username }}</p>
+    <p><strong>Name:</strong>{{influencer.name}}</p>
+    <p><strong>Niche:</strong> {{ influencer.niche }}</p>
+    <p><strong>Category:</strong> {{ influencer.category }}</p>
+    <p><strong>Reach:</strong> {{ influencer.reach }}</p>
+    <p><strong>Platform Presence:</strong> {{ influencer.platform_presence }}</p>
+</div>
+<div class="text-center mt-4">
+    <a href="/sponsor_dashboard" class="btn btn-info">Back to Dashboard</a>
+</div>
+{% endblock %}
